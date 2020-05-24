@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<form>
+  <input type="text" name="username">
+  <button id="submit">提交</button>
+</form>
+<button id="get">获取</button>
+<script src="/vendors/axios.min.js"></script>
+<script>
+  document.querySelector('#submit').addEventListener('click', e => {
+    e.preventDefault();
+    const username = document.querySelector('input[name="username"]').value;
+    axios.post('/login', { user: { username } })
+      .then(response => {
+        response = response.data;
+        const { status, token, message } = response;
+        if (status === 200) {
+          localStorage.setItem('token', token);
+        }
+        alert(message);
+      })
+      .catch(error => alert(error.toString()));
+  });
+
+  document.querySelector('#get').addEventListener('click', e => {
+    e.preventDefault();
+    const instance = axios.create({ headers: { authorization: `Bearer ${localStorage.getItem('token')}` } });
+    instance.get('/info')
+      .then(response => {
+        response = response.data;
+        console.log(response)
+        alert(response.message);
+      })
+      .catch(error => alert(error.toString()));
+  });
+
+</script>
+</body>
+</html>
